@@ -5,6 +5,8 @@ namespace Everli\Test;
 use PHPUnit\Framework\TestCase;
 use Everli\HaverSineCoverage;
 use Everli\Exceptions\EmptyShoppersListException;
+use Everli\Exceptions\EmptyZonesException;
+use Everli\Exceptions\MissingKeyException;
 
 class HaversineCoverageTest extends TestCase
 {
@@ -39,26 +41,52 @@ class HaversineCoverageTest extends TestCase
 
     public function testValidateEmptyZonesList()
     {
+        $this->expectException(EmptyZonesException::class);
 
+        new HaverSineCoverage([], $this->shoppers);
     }
 
-    public function testValidateInvalidRowInShoppersList()
+    public function testInvalidRowInShoppersList()
     {
+        $this->expectException(MissingKeyException::class);
 
+        unset($this->shoppers[0]["lat"]);
+        new HaverSineCoverage($this->zones, $this->shoppers);
     }
 
-    public function testValidateInvalidRowInZonesList()
+    public function testInvalidRowInZonesList()
     {
+        $this->expectException(MissingKeyException::class);
 
+        unset($this->zones[0]["zip_code"]);
+        new HaverSineCoverage($this->zones, $this->shoppers);
     }
 
     public function testAppropriateZoneCoverageListIsReturned()
     {
+        $coverage = new HaverSineCoverage($this->zones, $this->shoppers);
 
+        $expected = [
+            ["shopper_id" => "S1", "coverage" => 75],
+            ["shopper_id" => "S3", "coverage" => 25],
+            ["shopper_id" => "S6", "coverage" => 25],
+            ["shopper_id" => "S7", "coverage" => 25],
+        ];
+
+        $this->assertEquals($expected, $coverage->percentageCoveredByEnabledShoppers());
+        $this->assertCount(4, $coverage->percentageCoveredByEnabledShoppers());
     }
 
     public function testEmptyListReturnedIfNoShopperFallsWithinAnyZone()
     {
+        $index = 0;
+        foreach ($this->shoppers as $shopper) {
+            $this->shoppers[$index]["enabled"] = false;
+            $index++;
+        }
 
+        $coverage = new HaverSineCoverage($this->zones, $this->shoppers);
+        $this->assertCount(0, $coverage->percentageCoveredByEnabledShoppers());
+        $this->assertEmpty($coverage->percentageCoveredByEnabledShoppers());
     }
 }
