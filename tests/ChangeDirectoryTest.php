@@ -12,37 +12,54 @@ class ChangeDirectoryTest extends TestCase
     {
         $this->expectException(InvalidDirectoryNameException::class);
 
-        $path = new ChangeDirectory('/234/b/c/d');
+        $path = new ChangeDirectory("/234/b/c/d");
     }
 
     public function testMovingOneDirectroyUp()
     {
-        $path->cd('../../../../d');
-        echo $path->current_path;
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('..');
+
+        $this->assertEquals("/a/b/c", $path->current_path);
     }
 
     public function testMovingOneDirectroyUpThenAnotherFolder()
     {
-        # code...
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('../x');
+
+        $this->assertEquals("/a/b/c/x", $path->current_path);
     }
 
     public function testMovingTwoDirectoriesUp()
     {
-        # code...
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('../..');
+
+        $this->assertEquals("/a/b", $path->current_path);
     }
 
     public function testMovingTwoDirectriesUpThenAnotherFolder()
     {
-        # code...
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('../../x');
+
+        $this->assertEquals("/a/b/x", $path->current_path);
     }
 
     public function testGettingToRootFolder()
     {
-        # code...
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('../../../..');
+
+        $this->assertEquals("/", $path->current_path);
     }
 
     public function testInvalidCDPathSupplied()
     {
-        # code...
+        $this->expectException(InvalidDirectoryNameException::class);
+
+        $path = new ChangeDirectory("/a/b/c/d");
+        $path->cd('../123');
     }
 }
