@@ -1,7 +1,10 @@
 <?php
+
 namespace Everli;
 
-class Path
+use Everli\Exceptions\InvalidDirectoryNameException;
+
+class ChangeDirectory
 {
     public $root_path = "/";
     public $current_path;
@@ -53,7 +56,7 @@ class Path
 
             // Match against alphabet. Case Insensitive
             if (! preg_match('/^[A-Z]+$/i', $directory_name)) {
-                throw new \Exception("Directory names should only contain letters from the alphabet", 1);
+                throw new InvalidDirectoryNameException("Directory names should only contain letters from the alphabet", 1);
             }
         }
 
@@ -61,7 +64,4 @@ class Path
     }
 }
 
-$path = new Path('/a/b/c/d');
-$path->cd('../../../../d');
-echo $path->current_path;
-
+// $w = $path = new \Everli\Path('/a/b/c/d');

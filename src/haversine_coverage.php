@@ -46,6 +46,8 @@ class HaverSineCoverage
             }
         }
 
+
+        // Sort decending based off coverage value
         usort($return_arr, function ($a, $b) {
             if ($a["coverage"] == $b["coverage"]) {
                 return 0;
